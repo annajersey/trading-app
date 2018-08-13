@@ -1,6 +1,7 @@
 import {createSymbolsTable} from "./DBClient";
 const WebSocket = require('ws');
 const axios = require('axios');
+const socketIo = require("socket.io");
 var appRouter = function (app) {
     app.get("/", function (req, res) {
         res.status(200).send("Welcome to our API");
