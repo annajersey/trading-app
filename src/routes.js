@@ -38,13 +38,13 @@ var appRouter = function (app) {
             });
     });
 
-    app.get("/ws/ticker", function (req, res) {
-        const ws = new WebSocket('wss://stream.binance.com:9443/ws/etcusdt@ticker');
-        ws.on('message', function (data) {
-            //res.status(200).send(data);
-            console.log(data);
-        });
-    });
+    // app.get("/ws/ticker", function (req, res) {
+    //     const ws = new WebSocket('wss://stream.binance.com:9443/ws/etcusdt@ticker');
+    //     ws.on('message', function (data) {
+    //         //res.status(200).send(data);
+    //         console.log(data);
+    //     });
+    // });
     }
 
 

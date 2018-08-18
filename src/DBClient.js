@@ -38,6 +38,25 @@ exports.createSymbolsTable = function (symbols) {
             pool.end()
         });
     });
+
+    let query2 = `
+    CREATE SEQUENCE IF NOT EXISTS rates_id_seq start 1 increment 1;
+    CREATE TABLE IF NOT EXISTS rates (
+        symbol character(80),
+        datetime timestamp without time zone,
+        priceChange numeric,
+        priceChangePercent numeric,
+        lastPrice numeric,
+         open numeric,
+          high numeric,
+           low numeric,
+        id integer NOT NULL DEFAULT nextval('rates_id_seq'::regclass),
+        CONSTRAINT rates_pkey PRIMARY KEY (id))
+        
+        `;
+    pool.query(query, (err, res) => {
+        console.log(err, res);
+     });
 }
 
 exports.clearDb = function () {
