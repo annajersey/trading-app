@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+    <title>Live stock price ticker</title>
+
+    <script src="//cdn.jsdelivr.net/socket.io-client/1.3.2/socket.io.js" />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script>
+
+         let state = {
+             response: false,
+             endpoint: "http://localhost:4003"
+         };
+         const { endpoint } = state;
+         const socket = io(endpoint,{path:'/ws/ticker'});
+
+         socket.on("FromAPI", data =>  alert(data));
+//        $(function () {
+//            var socket = io();
+//
+//            socket.on('stock price update', function(stockprice) {
+//                $('#stockprice').text(stockprice);
+//            });
+//
+//        });
+    </script>
+
+</head>
+<body>
+Stock price: <span id="stockprice"></span>
+</body>
+</html>
