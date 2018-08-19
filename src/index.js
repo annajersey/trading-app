@@ -1,3 +1,5 @@
+import {saveRates} from "./DBClient";
+
 var express = require("express");
 var routes = require("./routes.js");
 var app = express();
@@ -42,11 +44,26 @@ io.on("connection", socket => {
     const ws = new WebSocket(url);
 
     ws.on('message', function (data) {
-        socket.emit("TradesAPI", data);
         let result = tickerTransform(JSON.parse(data))
-        console.log(result);
-        server.close();
+        socket.emit("TradesAPI",  JSON.stringify(result));
+        //saveRates(result)
+        //console.log(result);
+        //server.close();
     });
     socket.on("disconnect", () => console.log("Client disconnected"));
 });
+
+
+
+
+//
+// axios.get(`https://api.binance.com/api/v1/klines=${req.params.symbol}`) v/api/v1/trades
+//https://api.binance.com/api/v1/klines?symbol=LTCBTC&interval=5m
+//     .then(response => {
+//         console.log(response.data);
+//         res.status(200).send(response.data);
+//     })
+//     .catch(error => {
+//         console.log(error);
+//     });
 

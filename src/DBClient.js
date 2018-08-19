@@ -26,10 +26,10 @@ exports.createSymbolsTable = function (symbols) {
     pool.query(query, (err, res) => {
         console.log(err, res);
         let query = "";
-        symbols.forEach((symbol,key) => {
-            console.log('symbol',symbol.baseAsset,symbol.quoteAsset)
+        symbols.forEach((symbol, key) => {
+            console.log('symbol', symbol.baseAsset, symbol.quoteAsset)
             query += "('" + symbol.symbol + "','" + symbol.baseAsset + "','" + symbol.quoteAsset + "')"
-            if(key!==symbols.length-1) query += ","
+            if (key !== symbols.length - 1) query += ","
         });
         console.log(query);
         pool.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
@@ -56,7 +56,7 @@ exports.createSymbolsTable = function (symbols) {
         `;
     pool.query(query, (err, res) => {
         console.log(err, res);
-     });
+    });
 }
 
 exports.clearDb = function () {
@@ -66,13 +66,28 @@ exports.clearDb = function () {
 
         })
 }
+exports.saveRates = function (result) {
+    let query="INSERT INTO rates (symbol,priceChange,priceChangePercent,lastPrice,open,high,low,datetime) " +
+        "VALUES ('" + result.symbol + "','" + result.priceChange + "','"+result.priceChangePercent+"','" +
+        + result.curDayClose + "','"
+        + result.open + "','"
+        + result.high + "','"
+        + result.low + "', current_timestamp)";
+    console.log(query);
+    pool.query(query, (err, res) => {
+        //console.log(err);
 
+    })
+    //pool.end();
+
+
+}
 exports.saveToDb = function (name, price) {
     console.log(name, price);
     if (isNaN(price)) return;
     pool.query("SELECT count(*) from currencies where name='" + name + "'", (err, res) => {
 
-
+        //todo escape query
         //console.log(res.rows[0].count)
         pool.query("INSERT INTO currencies (name,price,datetime) " +
             "VALUES ('" + name + "','" + price + "',current_timestamp)", (err, res) => {
