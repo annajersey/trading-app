@@ -61,15 +61,12 @@ var appRouter = function (app) {
     });
 
         app.get("/hourly/:symbol", function (req, res) {
-            let url=`https://api.binance.com/api/v1/klines?symbol=${req.params.symbol}&interval=1m&limit=1`;
+            let url=`https://api.binance.com/api/v1/klines?symbol=${req.params.symbol}&interval=1m&limit=61`;
             axios.get(url)
                 .then(response => {
-                console.log(response.data);
-                    var myArray = JSON.parse(response.data);
-
-                    // result = myArray.map(item=> mapklinesTransform(item));
-                    // console.log(result);
-                    // res.status(200).send(JSON.stringify(result));
+                     let result = response.data.map(item=> klinesTransform(item));
+                     console.log(result);
+                     res.status(200).send(JSON.stringify(result));
                 })
                 .catch(error => {
                     console.log(error);

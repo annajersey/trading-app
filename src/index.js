@@ -46,8 +46,8 @@ io.on("connection", socket => {
     ws.on('message', function (data) {
         let result = tickerTransform(JSON.parse(data))
         socket.emit("TradesAPI",  JSON.stringify(result));
-        //saveRates(result)
-        //console.log(result);
+        saveRates(result)
+        console.log(result);
         //server.close();
     });
     socket.on("disconnect", () => console.log("Client disconnected"));
