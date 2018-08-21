@@ -1,4 +1,12 @@
-import {saveRates} from "./DBClient";
+var cron = require('node-cron');
+
+
+import {save12HourStats, saveRates} from "./DBClient";
+cron.schedule('0 */12 * * *', function(){
+    console.log('running a task every minute');
+    save12HourStats();
+});
+
 
 var express = require("express");
 var routes = require("./routes.js");
@@ -12,6 +20,30 @@ var server = app.listen(5001, function () {
 });
 
 const io = socketIo(server);
+
+io.on("connection", socket => {
+    let symbols = socket.handshake.query.symbols.split(',').map(item=>item.toLowerCase()+'@ticker').join('/');
+    console.log(symbols);
+    let url = 'wss://stream.binance.com:9443/ws/'+symbols;
+    const ws = new WebSocket(url);
+    //var savedAt = 0;
+    ws.on('message', function (data) {
+        let result = tickerTransform(JSON.parse(data))
+        socket.emit("TradesAPI",  JSON.stringify(result));
+        // var currentTime = Date.now();
+        // if(currentTime-savedAt>60000){//60000milliseconds
+        //     saveRates(result); //this is my function, that i want to be called once in a minute
+        //     savedAt = currentTime;
+        // }
+
+        console.log(result);
+        //server.close();
+    });
+    socket.on("disconnect", () => console.log("Client disconnected"));
+});
+
+
+
 const tickerTransform = m => ({
     eventType: m.e,
     eventTime: m.E,
@@ -37,33 +69,3 @@ const tickerTransform = m => ({
     lastTradeId: m.L,
     totalTrades: m.n,
 })
-io.on("connection", socket => {
-    let symbols = socket.handshake.query.symbols.split(',').map(item=>item.toLowerCase()+'@ticker').join('/');
-    console.log(symbols);
-    let url = 'wss://stream.binance.com:9443/ws/'+symbols;
-    const ws = new WebSocket(url);
-
-    ws.on('message', function (data) {
-        let result = tickerTransform(JSON.parse(data))
-        socket.emit("TradesAPI",  JSON.stringify(result));
-        saveRates(result)
-        console.log(result);
-        //server.close();
-    });
-    socket.on("disconnect", () => console.log("Client disconnected"));
-});
-
-
-
-
-//
-// axios.get(`https://api.binance.com/api/v1/klines=${req.params.symbol}`) v/api/v1/trades
-//https://api.binance.com/api/v1/klines?symbol=LTCBTC&interval=5m
-//     .then(response => {
-//         console.log(response.data);
-//         res.status(200).send(response.data);
-//     })
-//     .catch(error => {
-//         console.log(error);
-//     });
-
