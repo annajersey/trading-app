@@ -3,10 +3,13 @@ var cron = require('node-cron');
 
 import {save12HourStats, saveRates} from "./DBClient";
 cron.schedule('0 */12 * * *', function(){
-    console.log('running a task every minute');
     save12HourStats();
 });
 
+cron.schedule('0 */12 * * *', function(){
+    console.log('running a task every minute');
+    save12HourStats();
+});
 
 var express = require("express");
 var routes = require("./routes.js");

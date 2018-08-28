@@ -18,7 +18,7 @@ var appRouter = function (app) {
         axios.get('https://api.binance.com/api/v1/exchangeInfo')
             .then(response => {
                 console.log(response.data);
-                res.status(200).send(response.data.symbols.map(i=>"'"+i.symbol+"'").join());
+                res.status(200).send(response.data.symbols);
             })
             .catch(error => {
                 console.log(error);
