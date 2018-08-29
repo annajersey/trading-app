@@ -1,4 +1,4 @@
-import {createSymbolsTable} from "./DBClient";
+import {createSymbolsTable, install} from "./DBClient";
 
 const axios = require('axios');
 var appRouter = function (app) {
@@ -6,9 +6,10 @@ var appRouter = function (app) {
         res.status(200).send("Welcome to our API");
     });
     app.get("/install", function (req, res) {
+
         axios.get('https://api.binance.com/api/v1/exchangeInfo')
             .then(response => {
-                createSymbolsTable(response.data.symbols);
+                install(response.data.symbols);
                 res.status(200).send(response.data.symbols);
             }).catch(error => {
             console.log(error);
@@ -36,18 +37,6 @@ var appRouter = function (app) {
                 console.log(error);
             });
     });
-
-    app.get("/price/:symbol", function (req, res) {
-        axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${req.params.symbol}`)
-            .then(response => {
-                console.log(response.data);
-                res.status(200).send(response.data);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    });
-
 
     app.get("/hourly/:symbol", function (req, res) {
         let url = `https://api.binance.com/api/v1/klines?symbol=${req.params.symbol}&interval=1m&limit=61`;
