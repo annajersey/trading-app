@@ -1,10 +1,11 @@
-var express = require("express");
-var routes = require("./routes.js");
-var app = express();
+import {savePrices} from "./DBClient";
+let express = require("express");
+let routes = require("./routes.js");
+let app = express();
 routes(app);
 const socketIo = require("socket.io");
 const WebSocket = require('ws');
-var server = app.listen(5001, function () {
+let server = app.listen(5001, function () {
     console.log("app running on port.", server.address().port);
 });
 
@@ -37,9 +38,9 @@ const tickerTransform = m => ({
     bestBidQnt: m.B,
     bestAsk: m.a,
     bestAskQnt: m.A,
-    open: m.o,
-    high: m.h,
-    low: m.l,
+    openPrice: m.o,
+    highPrice: m.h,
+    lowPrice: m.l,
     volume: m.v,
     volumeQuote: m.q,
     openTime: m.O,

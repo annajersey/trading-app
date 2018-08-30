@@ -16,8 +16,8 @@ const pool = new pg.Pool({
 exports.install = async function (symbols) {
     const client = await pool.connect()
     try {
-    await client.query('BEGIN');
-    let query = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
+        await client.query('BEGIN');
+        let query = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS symbols (
         symbol character(80),
         baseAsset character(80),
@@ -25,81 +25,87 @@ exports.install = async function (symbols) {
         id integer NOT NULL DEFAULT nextval('symbols_id_seq'::regclass),
         CONSTRAINT symbols_pkey PRIMARY KEY (id),
         CONSTRAINT symbols_symbol_key UNIQUE (symbol))`;
-    client.query(query, (err, res) => {
-        console.log(err, res);
-        let query = "";
-        symbols.forEach((symbol, key) => {
-            query += "('" + symbol.symbol + "','" + symbol.baseAsset + "','" + symbol.quoteAsset + "')"
-            if (key !== symbols.length - 1) query += ","
-        });
-
-        client.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
-            "VALUES " + query, (err, res) => {
+        client.query(query, (err, res) => {
             console.log(err, res);
-        });
-    });
+            let query = "";
+            symbols.forEach((symbol, key) => {
+                query += "('" + symbol.symbol + "','" + symbol.baseAsset + "','" + symbol.quoteAsset + "')"
+                if (key !== symbols.length - 1) query += ","
+            });
 
-    let query2 = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
+            client.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
+                "VALUES " + query, (err, res) => {
+                console.log(err, res);
+            });
+        });
+
+        let query2 = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS prices (
         symbol character(80),
         priceChange numeric,
         priceChangePercent numeric,
-        lastPrice numeric,
         openPrice numeric,
         highPrice numeric,
         lowPrice numeric,
+        closePrice numeric,
         volume numeric,
         closeTime numeric,
         datetime timestamp without time zone,
         id integer NOT NULL DEFAULT nextval('prices_id_seq'::regclass),
-        CONSTRAINT prices_pkey PRIMARY KEY (id))`;
-    client.query(query2, (err, res) => {
-        console.log(err, res);
-    });
-    await client.query('COMMIT')
+        CONSTRAINT prices_pkey PRIMARY KEY (id),
+        CONSTRAINT prices_symbol_key UNIQUE (symbol))`;
+        client.query(query2, (err, res) => {
+            console.log(err, res);
+        });
+        await client.query('COMMIT')
     } catch (e) {
         await client.query('ROLLBACK')
         throw e
-    }finally {
+    } finally {
         client.release()
     }
 }
 
-exports.savePrices = (result) => {
+exports.savePrices = async function (result) {
+    const client = await pool.connect()
+    try {
+        await
+        client.query('BEGIN');
+        let query= "INSERT INTO prices (symbol,priceChange,priceChangePercent," +
+            "closePrice,openPrice,highPrice,lowPrice,volume,closeTime,datetime) " +
+            "VALUES ('" + result.symbol + "','" + result.priceChange + "','" + result.priceChangePercent + "','" +
+            +result.curDayClose + "','"
+            + result.openPrice + "','"
+            + result.highPrice + "','"
+            + result.lowPrice + "','"
+            + result.volume + "','"
+            + result.closeTime + "', current_timestamp) " +
+            "  ON CONFLICT (symbol) " +
+            "  DO UPDATE SET " +
+            "symbol='" + result.symbol + "'," +
+            " priceChange='" + result.priceChange + "'," +
+            " priceChangePercent='" + result.priceChangePercent + "'," +
+            " openPrice='" + result.openPrice + "'," +
+            " highPrice='" + result.highPrice + "'," +
+            " lowPrice='" + result.lowPrice + "'," +
+            " closePrice='" + result.curDayClose + "'," +
+            " volume='" + result.volume + "'," +
+            " closeTime='" + result.closeTime + "'," +
+            " datetime=current_timestamp " +
+            " WHERE prices.symbol='" + result.symbol + "';"
+        console.log(query);
+        client.query(query, (err, res) => {
+            console.log(err);
+        })
 
-    let query =
-        "UPDATE prices SET " +
-        "symbol='" + result.symbol + "'," +
-        " priceChange='" + result.priceChange + "'," +
-        " priceChange='" + result.priceChange + "'," +
-        " priceChangePercent='" + result.priceChangePercent + "'," +
-        " lastPrice='" + result.lastPrice + "'," +
-        " openPrice='" + result.openPrice + "'," +
-        " highPrice='" + result.highPrice + "'," +
-        " lowPrice='" + result.lowPrice + "'," +
-        " volume='" + result.volume + "'," +
-        " closeTime='" + result.closeTime + "'," +
-        " datetime=current_timestamp " +
-        "' WHERE symbol='" + result.symbol + "';"
-
-    "INSERT INTO prices (symbol,priceChange,priceChangePercent," +
-    "lastPrice,openPrice,highPrice,lowPrice,volume,closeTime,datetime) " +
-    "VALUES ('" + result.symbol + "','" + result.priceChange + "','" + result.priceChangePercent + "','" +
-    +result.lastPrice + "','"
-    + result.openPrice + "','"
-    + result.highPrice + "','"
-    + result.lowPrice + "','"
-    + result.volume + "','"
-    + result.closeTime + "', current_timestamp) " +
-    "WHERE NOT EXISTS (SELECT 1 FROM table WHERE symbol='" + result.symbol + "');";
-
-    console.log(query);
-    pool.query(query, (err, res) => {
-        console.log(err);
-    })
-
-        .catch(error => {
-            console.log(error);
-        });
+        await
+        client.query('COMMIT')
+    } catch (e) {
+        await
+        client.query('ROLLBACK')
+        throw e
+    } finally {
+        client.release()
+    }
 
 }

@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --exec babel-node src/index.js",
     "installapp": "babel-node src/install.js",
-    "testing": "babel-node src/test.js",
     "a": "nodemon --exec babel-node src/dbtest.js"
   },
   "keywords": [],
