@@ -1,7 +1,4 @@
 import dotenv from 'dotenv';
-
-const axios = require('axios');
-
 dotenv.config();
 
 const pg = require('pg');
@@ -17,6 +14,7 @@ exports.install = async function (symbols) {
     const client = await pool.connect()
     try {
         await client.query('BEGIN');
+        console.log('creating symbols table')
         let query = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS symbols (
         symbol character(80),
@@ -26,7 +24,7 @@ exports.install = async function (symbols) {
         CONSTRAINT symbols_pkey PRIMARY KEY (id),
         CONSTRAINT symbols_symbol_key UNIQUE (symbol))`;
         client.query(query, (err, res) => {
-            console.log(err, res);
+            if(err) console.log(err)
             let query = "";
             symbols.forEach((symbol, key) => {
                 query += "('" + symbol.symbol + "','" + symbol.baseAsset + "','" + symbol.quoteAsset + "')"
@@ -35,7 +33,7 @@ exports.install = async function (symbols) {
 
             client.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
                 "VALUES " + query, (err, res) => {
-                console.log(err, res);
+                if(err) console.log(err)
             });
         });
 
@@ -54,8 +52,9 @@ exports.install = async function (symbols) {
         id integer NOT NULL DEFAULT nextval('prices_id_seq'::regclass),
         CONSTRAINT prices_pkey PRIMARY KEY (id),
         CONSTRAINT prices_symbol_key UNIQUE (symbol))`;
+        console.log('creating pricesnpm start table')
         client.query(query2, (err, res) => {
-            console.log(err, res);
+            if(err) console.log(err);
         });
         await client.query('COMMIT')
     } catch (e) {
@@ -63,6 +62,7 @@ exports.install = async function (symbols) {
         throw e
     } finally {
         client.release()
+        console.log('done')
     }
 }
 
@@ -93,9 +93,9 @@ exports.savePrices = async function (result) {
             " closeTime='" + result.closeTime + "'," +
             " datetime=current_timestamp " +
             " WHERE prices.symbol='" + result.symbol + "';"
-        console.log(query);
+
         client.query(query, (err, res) => {
-            console.log(err);
+            if(err) console.log(err);
         })
 
         await

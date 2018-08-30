@@ -1,11 +1,11 @@
 import {savePrices} from "./DBClient";
-let express = require("express");
-let routes = require("./routes.js");
-let app = express();
+const express = require("express");
+const routes = require("./routes.js");
+const app = express();
 routes(app);
 const socketIo = require("socket.io");
 const WebSocket = require('ws');
-let server = app.listen(5001, function () {
+const server = app.listen(5001, function () {
     console.log("app running on port.", server.address().port);
 });
 

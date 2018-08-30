@@ -1,7 +1,5 @@
-import {createSymbolsTable, install} from "./DBClient";
-
 const axios = require('axios');
-var appRouter = function (app) {
+let appRouter = function (app) {
     app.get("/", function (req, res) {
         res.status(200).send("Welcome to our API");
     });
