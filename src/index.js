@@ -9,23 +9,19 @@ var server = app.listen(5001, function () {
 });
 
 const io = socketIo(server);
-
 io.on("connection", socket => {
-    let symbols = socket.handshake.query.symbols.split(',').map(item=>item.toLowerCase()+'@ticker').join('/');
+    let symbols = socket.handshake.query.symbols.split(',').map(item => item.toLowerCase() + '@ticker').join('/');
     console.log(symbols);
-    let url = 'wss://stream.binance.com:9443/ws/'+symbols;
+    let url = 'wss://stream.binance.com:9443/ws/' + symbols;
     const ws = new WebSocket(url);
     ws.on('message', function (data) {
         let result = tickerTransform(JSON.parse(data))
-        socket.emit("TradesAPI",  JSON.stringify(result));
+        socket.emit("TradesAPI", JSON.stringify(result));
         savePrices(result);
         console.log(result);
-
     });
     socket.on("disconnect", () => console.log("Client disconnected"));
 });
-
-
 
 const tickerTransform = m => ({
     eventType: m.e,

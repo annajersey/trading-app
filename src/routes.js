@@ -5,16 +5,7 @@ var appRouter = function (app) {
     app.get("/", function (req, res) {
         res.status(200).send("Welcome to our API");
     });
-    app.get("/install", function (req, res) {
 
-        axios.get('https://api.binance.com/api/v1/exchangeInfo')
-            .then(response => {
-                install(response.data.symbols);
-                res.status(200).send(response.data.symbols);
-            }).catch(error => {
-            console.log(error);
-        });
-    });
     app.get("/symbols", function (req, res) {
         axios.get('https://api.binance.com/api/v1/exchangeInfo')
             .then(response => {
