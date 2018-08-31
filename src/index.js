@@ -15,11 +15,17 @@ io.on("connection", socket => {
     console.log(symbols);
     let url = 'wss://stream.binance.com:9443/ws/' + symbols;
     const ws = new WebSocket(url);
+    let savedAt = 0;
     ws.on('message', function (data) {
         let result = tickerTransform(JSON.parse(data))
         socket.emit("TradesAPI", JSON.stringify(result));
-        savePrices(result);
-        console.log(result);
+        var currentTime = Date.now();
+        if(currentTime-savedAt>120000){//60000milliseconds
+            savePrices(result);
+            savedAt = currentTime;
+        }
+
+
     });
     socket.on("disconnect", () => console.log("Client disconnected"));
 });
