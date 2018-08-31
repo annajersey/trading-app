@@ -10,7 +10,7 @@ const pool = new pg.Pool({
     port: process.env.DATABASE_PORT
 });
 
-exports.install = async function (symbols) {
+exports.installDB = async function (symbols) {
     const client = await pool.connect()
     try {
         await client.query('BEGIN');
@@ -52,7 +52,7 @@ exports.install = async function (symbols) {
         id integer NOT NULL DEFAULT nextval('prices_id_seq'::regclass),
         CONSTRAINT prices_pkey PRIMARY KEY (id),
         CONSTRAINT prices_symbol_key UNIQUE (symbol))`;
-        console.log('creating pricesnpm start table')
+        console.log('creating prices table')
         client.query(query2, (err, res) => {
             if(err) console.log(err);
         });

@@ -2,6 +2,11 @@ import {savePrices} from "./DBClient";
 const express = require("express");
 const routes = require("./routes.js");
 const app = express();
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 routes(app);
 const socketIo = require("socket.io");
 const WebSocket = require('ws');
@@ -10,19 +15,21 @@ const server = app.listen(5001, function () {
 });
 
 const io = socketIo(server);
+let savedAt = 0;
+
 io.on("connection", socket => {
     let symbols = socket.handshake.query.symbols.split(',').map(item => item.toLowerCase() + '@ticker').join('/');
     console.log(symbols);
     let url = 'wss://stream.binance.com:9443/ws/' + symbols;
     const ws = new WebSocket(url);
-    let savedAt = 0;
     ws.on('message', function (data) {
         let result = tickerTransform(JSON.parse(data))
         socket.emit("TradesAPI", JSON.stringify(result));
         var currentTime = Date.now();
-        if(currentTime-savedAt>120000){//60000milliseconds
+        if(currentTime-savedAt>180000){//2min
             savePrices(result);
             savedAt = currentTime;
+            console.log('savedAt',new Date(savedAt));
         }
 
 
@@ -31,9 +38,8 @@ io.on("connection", socket => {
 });
 
 const tickerTransform = m => ({
-    eventType: m.e,
-    eventTime: m.E,
     symbol: m.s,
+    eventTime: m.E,
     priceChange: m.p,
     priceChangePercent: m.P,
     weightedAvg: m.w,

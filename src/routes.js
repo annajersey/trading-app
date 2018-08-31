@@ -7,7 +7,7 @@ let appRouter = function (app) {
     app.get("/symbols", function (req, res) {
         axios.get('https://api.binance.com/api/v1/exchangeInfo')
             .then(response => {
-                console.log(response.data);
+                //console.log(response.data);
                 res.status(200).send(response.data.symbols);
             })
             .catch(error => {
@@ -19,7 +19,7 @@ let appRouter = function (app) {
     app.get("/price/:symbol", function (req, res) {
         axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${req.params.symbol}`)
             .then(response => {
-                console.log(response.data);
+                //console.log(response.data);
                 res.status(200).send(response.data);
             })
             .catch(error => {
@@ -32,7 +32,7 @@ let appRouter = function (app) {
         axios.get(url)
             .then(response => {
                 let result = response.data.map(item => klinesTransform(item));
-                console.log(result);
+                //console.log(result);
                 res.status(200).send(JSON.stringify(result));
             })
             .catch(error => {
