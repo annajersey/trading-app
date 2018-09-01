@@ -10,34 +10,13 @@ const pool = new pg.Pool({
     port: process.env.DATABASE_PORT
 });
 
-exports.installDB = async function (symbols) {
+exports.installDB = async function () {
     const client = await pool.connect()
     try {
         await client.query('BEGIN');
         console.log('creating symbols table')
-        let query = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
-        CREATE TABLE IF NOT EXISTS symbols (
-        symbol character(80),
-        baseAsset character(80),
-        quoteAsset character(80),
-        id integer NOT NULL DEFAULT nextval('symbols_id_seq'::regclass),
-        CONSTRAINT symbols_pkey PRIMARY KEY (id),
-        CONSTRAINT symbols_symbol_key UNIQUE (symbol))`;
-        client.query(query, (err, res) => {
-            if(err) console.log(err)
-            let query = "";
-            symbols.forEach((symbol, key) => {
-                query += "('" + symbol.symbol + "','" + symbol.baseAsset + "','" + symbol.quoteAsset + "')"
-                if (key !== symbols.length - 1) query += ","
-            });
 
-            client.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
-                "VALUES " + query, (err, res) => {
-                if(err) console.log(err)
-            });
-        });
-
-        let query2 = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
+        let query = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS prices (
         symbol character(80),
         priceChange numeric,
@@ -53,7 +32,7 @@ exports.installDB = async function (symbols) {
         CONSTRAINT prices_pkey PRIMARY KEY (id),
         CONSTRAINT prices_symbol_key UNIQUE (symbol))`;
         console.log('creating prices table')
-        client.query(query2, (err, res) => {
+        client.query(query, (err, res) => {
             if(err) console.log(err);
         });
         await client.query('COMMIT')
@@ -62,6 +41,7 @@ exports.installDB = async function (symbols) {
         throw e
     } finally {
         client.release()
+
     }
 }
 
