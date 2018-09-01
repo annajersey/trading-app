@@ -18,20 +18,16 @@ let savedAt = 0;
 
 io.on("connection", socket => {
     let symbols = socket.handshake.query.symbols.split(',').map(item => item.toLowerCase() + '@ticker').join('/');
-    console.log(symbols);
     let url = 'wss://stream.binance.com:9443/ws/' + symbols;
     const ws = new WebSocket(url);
     ws.on('message', function (data) {
         let result = tickerTransform(JSON.parse(data))
         socket.emit("TradesAPI", JSON.stringify(result));
         var currentTime = Date.now();
-        if(currentTime-savedAt>180000){//2min
+        if(currentTime-savedAt>60000){//save ones in a min
             savePrices(result);
             savedAt = currentTime;
-            console.log('savedAt',new Date(savedAt));
         }
-
-
     });
     socket.on("disconnect", () => console.log("Client disconnected"));
 });

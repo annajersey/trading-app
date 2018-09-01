@@ -7,8 +7,13 @@ let appRouter = function (app) {
     app.get("/symbols", function (req, res) {
         axios.get('https://api.binance.com/api/v1/exchangeInfo')
             .then(response => {
-                //console.log(response.data);
-                res.status(200).send(response.data.symbols);
+
+                let result=[]
+                response.data.symbols.forEach(s => {
+                    const {symbol, quoteAsset, baseAsset} = s;
+                    result.push({symbol, quoteAsset, baseAsset})
+                });
+                res.status(200).send(result);
             })
             .catch(error => {
                 console.log(error);

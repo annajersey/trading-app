@@ -9,12 +9,22 @@ Cryptocurrency exchange rates application based on Binance API
 * `npm install`
 * `npm run installapp`
 * `npm start`
+
 ### Test Client
 * git clone https://github.com/jeremy1l/tradesapp-client.git
 * `npm install`
 * in App.js fill endpoint url to match node backend server
-* add symbols to track
+* add symbols to track to array this.symbols
 * `npm start`
+
+### API Usage
+| URL  | Description |
+| :------------ |:---------------:|
+|/symbols | Symbol information (symbolId, quoteAsset, baseAsset, etc) |
+|/price/{symbolId}     | Latest price for a symbol.        |
+| /hourly/{symbol} |OHLC data per minute for an hour. For candlestick bars .  |
+|?symbols={symbols separeted by coma} | SocketIo endpoint for ticker statistics pushed every second |
+
 
 #### Technologies
 - Node

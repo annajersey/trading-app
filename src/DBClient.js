@@ -62,7 +62,6 @@ exports.installDB = async function (symbols) {
         throw e
     } finally {
         client.release()
-        console.log('done')
     }
 }
 
