@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const pg = require('pg');
@@ -10,30 +11,30 @@ const pool = new pg.Pool({
     port: process.env.DATABASE_PORT
 });
 
-exports.installDB = async function () {
+exports.installDB = async function (symbols) {
     const client = await pool.connect()
     try {
         await client.query('BEGIN');
         console.log('creating symbols table')
         let query = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS symbols (
-        symbol character(80),
-        baseAsset character(80),
-        quoteAsset character(80),
+        symbol character varying,
+        baseAsset character varying,
+        quoteAsset character varying,
         id integer NOT NULL DEFAULT nextval('symbols_id_seq'::regclass),
         CONSTRAINT symbols_pkey PRIMARY KEY (id),
         CONSTRAINT symbols_symbol_key UNIQUE (symbol))`;
         client.query(query, (err, res) => {
-            if(err) console.log(err)
+            if (err) console.log(err)
             let query = "";
             symbols.forEach((symbol, key) => {
-                query += "('" + symbol.symbol + "','" + symbol.baseAsset + "','" + symbol.quoteAsset + "')"
+                query += "(TRIM('" + symbol.symbol + "'),TRIM('" + symbol.baseAsset + "'),TRIM('" + symbol.quoteAsset + "'))"
                 if (key !== symbols.length - 1) query += ","
             });
 
             client.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
                 "VALUES " + query, (err, res) => {
-                if(err) console.log(err)
+                if (err) console.log(err)
             });
         });
 
@@ -50,11 +51,10 @@ exports.installDB = async function () {
         closeTime numeric,
         datetime timestamp without time zone,
         id integer NOT NULL DEFAULT nextval('prices_id_seq'::regclass),
-        CONSTRAINT prices_pkey PRIMARY KEY (id),
-        CONSTRAINT prices_symbol_key UNIQUE (symbol))`;
+        CONSTRAINT prices_pkey PRIMARY KEY (id))`;
         console.log('creating prices table')
         client.query(query2, (err, res) => {
-            if(err) console.log(err);
+            if (err) console.log(err);
         });
         await client.query('COMMIT')
     } catch (e) {
@@ -65,47 +65,50 @@ exports.installDB = async function () {
 
     }
 }
-
+exports.getSymbols = async function () {
+    const client = await pool.connect()
+    const result = await client.query({
+        rowMode: 'object',
+        text: 'SELECT * FROM symbols'
+    })
+    await client.end()
+    return result.rows;
+}
 exports.savePrices = async function (result) {
     const client = await pool.connect()
+    let insetQuery = '';
+    result.forEach(item =>
+        insetQuery += " ('" + item.symbol + "','"
+            + item.priceChange + "','"
+            + item.priceChangePercent + "','" +
+            +item.lastPrice + "','"
+            + item.openPrice + "','"
+            + item.highPrice + "','"
+            + item.lowPrice + "','"
+            + item.volume + "','"
+            + item.closeTime + "', current_timestamp),");
+
+    insetQuery = insetQuery.slice(0, -1);
     try {
-        await
-        client.query('BEGIN');
-        let query= "INSERT INTO prices (symbol,priceChange,priceChangePercent," +
+        let query = "INSERT INTO prices (symbol,priceChange,priceChangePercent," +
             "closePrice,openPrice,highPrice,lowPrice,volume,closeTime,datetime) " +
-            "VALUES ('" + result.symbol + "','" + result.priceChange + "','" + result.priceChangePercent + "','" +
-            +result.curDayClose + "','"
-            + result.openPrice + "','"
-            + result.highPrice + "','"
-            + result.lowPrice + "','"
-            + result.volume + "','"
-            + result.closeTime + "', current_timestamp) " +
-            "  ON CONFLICT (symbol) " +
-            "  DO UPDATE SET " +
-            "symbol='" + result.symbol + "'," +
-            " priceChange='" + result.priceChange + "'," +
-            " priceChangePercent='" + result.priceChangePercent + "'," +
-            " openPrice='" + result.openPrice + "'," +
-            " highPrice='" + result.highPrice + "'," +
-            " lowPrice='" + result.lowPrice + "'," +
-            " closePrice='" + result.curDayClose + "'," +
-            " volume='" + result.volume + "'," +
-            " closeTime='" + result.closeTime + "'," +
-            " datetime=current_timestamp " +
-            " WHERE prices.symbol='" + result.symbol + "';"
-
+            "VALUES " + insetQuery
         client.query(query, (err, res) => {
-            if(err) console.log(err);
+            if (err) console.log(err);
         })
-
-        await
-        client.query('COMMIT')
     } catch (e) {
-        await
-        client.query('ROLLBACK')
         throw e
     } finally {
+        console.log('prices saved', new Date());
         client.release()
     }
 
+}
+
+exports.clearPrices = async () => {
+    const client = await pool.connect();
+    client.query("DELETE from prices WHERE datetime < (now() - '"+process.env.CLEAN_DB_INTERVAL+" minutes'::interval)", (err, res) => {
+        if (err) console.log(err);
+    }) //delete all records older than a day
+    console.log('prices cleaned', new Date());
 }

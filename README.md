@@ -20,7 +20,7 @@ Cryptocurrency exchange rates application based on Binance API
 ### API Usage
 | URL  | Description |
 | :------------ |:---------------:|
-|/symbols | Symbol information (symbolId, quoteAsset, baseAsset, etc) |
+|/symbols | Symbol information (symbol, quoteasset, baseasset) |
 |/price/{symbolId}     | Latest price for a symbol.        |
 | /hourly/{symbol} |OHLC data per minute for an hour. For candlestick bars .  |
 |?symbols={symbols separeted by coma} | SocketIo endpoint for ticker statistics pushed every second |

@@ -1,3 +1,5 @@
+import {getSymbols} from "./DBClient";
+
 const axios = require('axios');
 let appRouter = function (app) {
     app.get("/", function (req, res) {
@@ -5,20 +7,10 @@ let appRouter = function (app) {
     });
 
     app.get("/symbols", function (req, res) {
-        axios.get('https://api.binance.com/api/v1/exchangeInfo')
-            .then(response => {
-
-                let result=[]
-                response.data.symbols.forEach(s => {
-                    const {symbol, quoteAsset, baseAsset} = s;
-                    result.push({symbol, quoteAsset, baseAsset})
-                });
-                res.status(200).send(result);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-
+        getSymbols().then(result=>{
+            console.log(result)
+            res.status(200).send(result);
+        })
     });
 
     app.get("/price/:symbol", function (req, res) {
