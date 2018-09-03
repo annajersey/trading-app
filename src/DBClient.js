@@ -1,7 +1,5 @@
 import dotenv from 'dotenv';
-
 dotenv.config();
-
 const pg = require('pg');
 const pool = new pg.Pool({
     user: process.env.DATABASE_USER,
@@ -16,7 +14,7 @@ exports.installDB = async function (symbols) {
     try {
         await client.query('BEGIN');
         console.log('creating symbols table')
-        let query = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
+        let querySymbols = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS symbols (
         symbol character varying,
         baseAsset character varying,
@@ -24,7 +22,7 @@ exports.installDB = async function (symbols) {
         id integer NOT NULL DEFAULT nextval('symbols_id_seq'::regclass),
         CONSTRAINT symbols_pkey PRIMARY KEY (id),
         CONSTRAINT symbols_symbol_key UNIQUE (symbol))`;
-        client.query(query, (err, res) => {
+        client.query(querySymbols, (err, res) => {
             if (err) console.log(err)
             let query = "";
             symbols.forEach((symbol, key) => {
@@ -38,7 +36,7 @@ exports.installDB = async function (symbols) {
             });
         });
 
-        let query2 = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
+        let queryPrices = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS prices (
         symbol character(80),
         priceChange numeric,
@@ -53,7 +51,7 @@ exports.installDB = async function (symbols) {
         id integer NOT NULL DEFAULT nextval('prices_id_seq'::regclass),
         CONSTRAINT prices_pkey PRIMARY KEY (id))`;
         console.log('creating prices table')
-        client.query(query2, (err, res) => {
+        client.query(queryPrices, (err, res) => {
             if (err) console.log(err);
         });
         await client.query('COMMIT')
@@ -107,7 +105,7 @@ exports.savePrices = async function (result) {
 
 exports.clearPrices = async () => {
     const client = await pool.connect();
-    client.query("DELETE from prices WHERE datetime < (now() - '"+process.env.CLEAN_DB_INTERVAL+" minutes'::interval)", (err, res) => {
+    client.query("DELETE from prices WHERE datetime < (now() - '" + process.env.CLEAN_DB_INTERVAL + " minutes'::interval)", (err, res) => {
         if (err) console.log(err);
     }) //delete all records older than a day
     console.log('prices cleaned', new Date());

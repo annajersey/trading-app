@@ -7,8 +7,7 @@ let appRouter = function (app) {
     });
 
     app.get("/symbols", function (req, res) {
-        getSymbols().then(result=>{
-            console.log(result)
+        getSymbols().then(result => {
             res.status(200).send(result);
         })
     });

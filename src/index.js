@@ -13,7 +13,7 @@ routes(app);
 const socketIo = require("socket.io");
 const WebSocket = require('ws');
 const server = app.listen(5001, function () {
-    console.log("app running on port.", server.address().port);
+    console.log("Trading App running on port.", server.address().port);
 });
 
 const io = socketIo(server);
