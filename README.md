@@ -8,8 +8,10 @@ Database update and clearing are launched with a periodicity settled in .env
 
 ### Installation
 * git clone https://github.com/jeremy1l/trading-app.git
-* create postgres database
-* fill requared parameters in .env
+* Create postgres database
+* Fill requared parameters in .env
+  * Database credentials
+  * Intervals to save/clear prices db table (in minutes)
 * `npm install`
 * `npm run installapp`
 * `npm start`
