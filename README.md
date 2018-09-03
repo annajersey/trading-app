@@ -49,11 +49,12 @@ Response:
     "price":"7255.01000000"
 }
 ```
-**OHLC data per minute for an hour. For candlestick bars.**
+**OHLC data per minute for last hour. For candlestick bars.**
 ```
 GET /hourly/{symbol}
 ```
 _Example:_ /hourly/ETHBTC 
+
 Response:
 ```javascript
 [{
@@ -72,6 +73,7 @@ Response:
 ?symbols={symbols_separeted_by_coma}
 ```
 _Example:_ ?symbols=ETHBTC,BTCUSDT,ETHUSDT
+
 `Event name: TradesAPI`
 
 Response:
@@ -109,7 +111,6 @@ Response:
 - Node
 - Express
 - SocketIo
-- Axios
 - PostgreSQL 
 
 -----------
