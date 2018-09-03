@@ -40,5 +40,3 @@ Database update and clearing are launched with a periodicity settled in .env
 - Postgres database
 
 -----------
-
-:tulip:
