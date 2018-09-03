@@ -42,11 +42,12 @@ Response:
 GET /price/{symbol}  
 ```
 _Example:_ /price/BTCUSDT 
+
 Response:
 ```javascript
 {
     "symbol": "BTCUSDT",
-    "price":"7255.01000000"
+    "price": "7255.01000000"
 }
 ```
 **OHLC data per minute for last hour. For candlestick bars.**
@@ -58,13 +59,13 @@ _Example:_ /hourly/ETHBTC
 Response:
 ```javascript
 [{
-    "OpenTime":1535958720000,
-    "Open":"7238.44000000",
-    "High":"7238.44000000",
-    "Low":"7233.10000000",
-    "Close":"7238.00000000",
-    "Volume":"4.40431300",
-    "CloseTime":1535958779999
+    "OpenTime": 1535958720000,
+    "Open": "7238.44000000",
+    "High": "7238.44000000",
+    "Low": "7233.10000000",
+    "Close": "7238.00000000",
+    "Volume": "4.40431300",
+    "CloseTime": 1535958779999
 },...]
 ```
 
@@ -79,28 +80,28 @@ _Example:_ ?symbols=ETHBTC,BTCUSDT,ETHUSDT
 Response:
 ```javascript
 {
-    "symbol":"ETHBTC",
-    "eventTime":1535964640495,
-    "priceChange":"-0.00106100",
-    "priceChangePercent":"-2.588",
-    "weightedAvg":"0.04031640",
-    "prevDayClose":"0.04098900",
-    "curDayClose":"0.03992800",
-    "closeTradeQuantity":"0.41900000",
-    "bestBid":"0.03990900",
-    "bestBidQnt":"1.49300000",
-    "bestAsk":"0.03992800",
-    "bestAskQnt":"8.64000000",
-    "openPrice":"0.04098900",
-    "highPrice":"0.04105000",
-    "lowPrice":"0.03983000",
-    "volume":"153274.27600000",
-    "volumeQuote":"6179.46705478",
-    "openTime":1535878240492,
-    "closeTime":1535964640492,
-    "firstTradeId":80072674,
-    "lastTradeId":80194571,
-    "totalTrades":121898
+    "symbol": "ETHBTC",
+    "eventTime": 1535964640495,
+    "priceChange": "-0.00106100",
+    "priceChangePercent": "-2.588",
+    "weightedAvg": "0.04031640",
+    "prevDayClose": "0.04098900",
+    "curDayClose": "0.03992800",
+    "closeTradeQuantity": "0.41900000",
+    "bestBid": "0.03990900",
+    "bestBidQnt": "1.49300000",
+    "bestAsk": "0.03992800",
+    "bestAskQnt": "8.64000000",
+    "openPrice": "0.04098900",
+    "highPrice": "0.04105000",
+    "lowPrice": "0.03983000",
+    "volume": "153274.27600000",
+    "volumeQuote": "6179.46705478",
+    "openTime": 1535878240492,
+    "closeTime": 1535964640492,
+    "firstTradeId": 80072674,
+    "lastTradeId": 80194571,
+    "totalTrades": 121898
 }
 ```
 
@@ -108,7 +109,7 @@ Response:
 
 
 #### Technologies Used
-- Node
+- Node.js
 - Express
 - SocketIo
 - PostgreSQL 
