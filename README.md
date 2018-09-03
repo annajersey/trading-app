@@ -2,10 +2,14 @@
 
 Cryptocurrency exchange rates application based on Binance API
 
+Application API includes three GET endpoints and one sockets endpoint
+
+Database update and clearing are launched with a periodicity settled in .env
+
 ### Installation
 * git clone https://github.com/jeremy1l/trading-app.git
 * create postgres database
-* fill requared database parameters in .env
+* fill requared parameters in .env
 * `npm install`
 * `npm run installapp`
 * `npm start`
@@ -33,5 +37,6 @@ Cryptocurrency exchange rates application based on Binance API
 - Axios
 - Postgres database
 
+-----------
 
-----
+:tulip:
