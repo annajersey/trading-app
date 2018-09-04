@@ -107,6 +107,7 @@ exports.clearPrices = async () => {
     const client = await pool.connect();
     client.query("DELETE from prices WHERE datetime < (now() - '" + process.env.CLEAN_DB_INTERVAL + " minutes'::interval)", (err, res) => {
         if (err) console.log(err);
+        client.release()
     }) //delete all records older than a day
     console.log('prices cleaned', new Date());
 }
