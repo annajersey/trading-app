@@ -10,10 +10,10 @@ const pool = new pg.Pool({
 });
 
 exports.installDB = async function (symbols) {
-    const client = await pool.connect()
+    const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        console.log('creating symbols table')
+        console.log('creating symbols table');
         let querySymbols = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS symbols (
         symbol character varying,
@@ -23,16 +23,16 @@ exports.installDB = async function (symbols) {
         CONSTRAINT symbols_pkey PRIMARY KEY (id),
         CONSTRAINT symbols_symbol_key UNIQUE (symbol))`;
         client.query(querySymbols, (err, res) => {
-            if (err) console.log(err)
+            if (err) console.log(err);
             let query = "";
             symbols.forEach((symbol, key) => {
-                query += "(TRIM('" + symbol.symbol + "'),TRIM('" + symbol.baseAsset + "'),TRIM('" + symbol.quoteAsset + "'))"
-                if (key !== symbols.length - 1) query += ","
+                query += "(TRIM('" + symbol.symbol + "'),TRIM('" + symbol.baseAsset + "'),TRIM('" + symbol.quoteAsset + "'))";
+                if (key !== symbols.length - 1) query += ",";
             });
 
             client.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
                 "VALUES " + query, (err, res) => {
-                if (err) console.log(err)
+                if (err) console.log(err);
             });
         });
 
@@ -50,30 +50,30 @@ exports.installDB = async function (symbols) {
         datetime timestamp without time zone,
         id integer NOT NULL DEFAULT nextval('prices_id_seq'::regclass),
         CONSTRAINT prices_pkey PRIMARY KEY (id))`;
-        console.log('creating prices table')
+        console.log('creating prices table');
         client.query(queryPrices, (err, res) => {
             if (err) console.log(err);
         });
-        await client.query('COMMIT')
+        await client.query('COMMIT');
     } catch (e) {
-        await client.query('ROLLBACK')
-        throw e
+        await client.query('ROLLBACK');
+        throw e;
     } finally {
-        client.release()
+        client.release();
 
     }
-}
+};
 exports.getSymbols = async function () {
-    const client = await pool.connect()
+    const client = await pool.connect();
     const result = await client.query({
         rowMode: 'object',
         text: 'SELECT * FROM symbols'
-    })
-    await client.end()
+    });
+    await client.end();
     return result.rows;
-}
+};
 exports.savePrices = async function (result) {
-    const client = await pool.connect()
+    const client = await pool.connect();
     let insetQuery = '';
     result.forEach(item =>
         insetQuery += " ('" + item.symbol + "','"
@@ -90,24 +90,24 @@ exports.savePrices = async function (result) {
     try {
         let query = "INSERT INTO prices (symbol,priceChange,priceChangePercent," +
             "closePrice,openPrice,highPrice,lowPrice,volume,closeTime,datetime) " +
-            "VALUES " + insetQuery
+            "VALUES " + insetQuery;
         client.query(query, (err, res) => {
             if (err) console.log(err);
-        })
+        });
     } catch (e) {
-        throw e
+        throw e;
     } finally {
         console.log('prices saved', new Date());
-        client.release()
+        client.release();
     }
 
-}
+};
 
 exports.clearPrices = async () => {
     const client = await pool.connect();
     client.query("DELETE from prices WHERE datetime < (now() - '" + process.env.CLEAN_DB_INTERVAL + " minutes'::interval)", (err, res) => {
         if (err) console.log(err);
-        client.release()
-    }) //delete all records older than a day
-    console.log('prices cleaned', new Date());
-}
+        client.release();
+    }); //delete all records older than a day
+    console.log('clear old prices data', new Date());
+};

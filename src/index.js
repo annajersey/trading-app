@@ -22,7 +22,7 @@ io.on("connection", socket => {
     let url = 'wss://stream.binance.com:9443/ws/' + symbols;
     const ws = new WebSocket(url);
     ws.on('message', function (data) {
-        let result = tickerTransform(JSON.parse(data))
+        let result = tickerTransform(JSON.parse(data));
         socket.emit("TradesAPI", JSON.stringify(result));
     });
     socket.on("disconnect", () => console.log("Client disconnected"));
@@ -49,13 +49,13 @@ io.on("connection", socket => {
         firstTradeId: m.F,
         lastTradeId: m.L,
         totalTrades: m.n,
-    })
+    });
 });
 
 clearPrices(); //clean data older than a 24h
 setInterval(()=>
     axios.get(`https://api.binance.com/api/v1/ticker/24hr`).then(response => {
         savePrices(response.data);
-    }).catch(error => {console.log(error);}), 1000*60*process.env.ADD_TO_DB_INTERVAL) //add new info every 5min
+    }).catch(error => {console.log(error);}), 1000*60*process.env.ADD_TO_DB_INTERVAL); //add new info every 5min
 
-setInterval(()=>clearPrices(), 1000*60*process.env.CLEAN_DB_INTERVAL)//clean data ones a day
+setInterval(()=>clearPrices(), 1000*60*process.env.CLEAN_DB_INTERVAL);//clean data ones a day

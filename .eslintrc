@@ -1,0 +1,15 @@
+{
+  "env": {
+    "node": 1,
+    "browser": 1
+  },
+  "parser": "babel-eslint",
+  "globals": {
+    "exampleGlobalVariable": true
+  },
+  "rules": {
+    "semi": [2, "always"]
+  },
+  "plugins": [
+  ]
+}

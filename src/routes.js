@@ -9,7 +9,7 @@ let appRouter = function (app) {
     app.get("/symbols", function (req, res) {
         getSymbols().then(result => {
             res.status(200).send(result);
-        })
+        });
     });
 
     app.get("/price/:symbol", function (req, res) {
@@ -44,6 +44,6 @@ let appRouter = function (app) {
             CloseTime: m[6]
         });
     });
-}
+};
 
 module.exports = appRouter;
