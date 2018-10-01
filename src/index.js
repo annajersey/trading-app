@@ -1,18 +1,20 @@
 import {clearPrices, savePrices} from "./DBClient/updatePrices";
+import log from "./logger";
 import dotenv from "dotenv";
+
 dotenv.config();
 const axios = require("axios");
 const express = require("express");
 const routes = require("./routes.js");
 const app = express();
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     next();
 });
 routes(app);
 const socketIo = require("socket.io");
 const WebSocket = require("ws");
-const server = app.listen(5001, function () {
+const server = app.listen(5001, () => {
     console.log("Trading App running on port.", server.address().port);
 });
 const io = socketIo(server);
@@ -20,11 +22,11 @@ io.on("connection", socket => {
     let symbols = socket.handshake.query.symbols.split(",").map(item => item.toLowerCase() + "@ticker").join("/");
     let url = "wss://stream.binance.com:9443/ws/" + symbols;
     const ws = new WebSocket(url);
-    ws.on("message", function (data) {
+    ws.on("message", (data) => {
         let result = tickerTransform(JSON.parse(data));
         socket.emit("TradesAPI", JSON.stringify(result));
     });
-    socket.on("disconnect", () => console.log("Client disconnected"));
+    socket.on("disconnect", () => log.info("Client disconnected"));
     const tickerTransform = m => ({
         symbol: m.s,
         eventTime: m.E,
@@ -51,8 +53,10 @@ io.on("connection", socket => {
     });
 });
 clearPrices(); //clean data older than a 24h
-setInterval(()=>
+setInterval(() =>
     axios.get(`https://api.binance.com/api/v1/ticker/24hr`).then(response => {
         savePrices(response.data);
-    }).catch(error => {console.log(error);}), 1000*60*process.env.ADD_TO_DB_INTERVAL); //add new info every 5min
-setInterval(()=>clearPrices(), 1000*60*process.env.CLEAN_DB_INTERVAL);//clean data ones a day
+    }).catch(error => {
+        log.info(error);
+    }), 1000 * 60 * process.env.ADD_TO_DB_INTERVAL); //add new info every 5min
+setInterval(() => clearPrices(), 1000 * 60 * process.env.CLEAN_DB_INTERVAL);//clean data ones a day

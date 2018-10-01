@@ -1,5 +1,6 @@
 import pool from "./config";
-exports.getSymbols = async function () {
+
+exports.getSymbols = async () => {
     const client = await pool.connect();
     const result = await client.query({
         rowMode: "object",

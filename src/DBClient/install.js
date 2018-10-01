@@ -1,5 +1,6 @@
 import pool from "./config";
-exports.installDB = async function (symbols) {
+
+exports.installDB = async (symbols) => {
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
@@ -12,16 +13,22 @@ exports.installDB = async function (symbols) {
         id integer NOT NULL DEFAULT nextval('symbols_id_seq'::regclass),
         CONSTRAINT symbols_pkey PRIMARY KEY (id),
         CONSTRAINT symbols_symbol_key UNIQUE (symbol))`;
-        client.query(querySymbols, (err, res) => {
-            if (err) console.log(err);
+        client.query(querySymbols, (err) => {
+            if (err) {
+                console.log(err);
+            }
             let query = "";
             symbols.forEach((symbol, key) => {
                 query += "(TRIM('" + symbol.symbol + "'),TRIM('" + symbol.baseAsset + "'),TRIM('" + symbol.quoteAsset + "'))";
-                if (key !== symbols.length - 1) query += ",";
+                if (key !== symbols.length - 1) {
+                    query += ",";
+                }
             });
             client.query("INSERT INTO symbols (symbol,baseAsset,quoteAsset) " +
-                "VALUES " + query, (err, res) => {
-                if (err) console.log(err);
+                "VALUES " + query, (err) => {
+                if (err) {
+                    console.log(err);
+                }
             });
         });
         let queryPrices = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
@@ -39,8 +46,10 @@ exports.installDB = async function (symbols) {
         id integer NOT NULL DEFAULT nextval('prices_id_seq'::regclass),
         CONSTRAINT prices_pkey PRIMARY KEY (id))`;
         console.log("creating prices table");
-        client.query(queryPrices, (err, res) => {
-            if (err) console.log(err);
+        client.query(queryPrices, (err) => {
+            if (err) {
+                console.log(err);
+            }
         });
         await client.query("COMMIT");
     } catch (e) {

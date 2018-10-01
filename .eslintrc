@@ -4,6 +4,7 @@
     "browser": 1
   },
   "parser": "babel-eslint",
+  "extends": "eslint:recommended",
   "rules": {
     "semi": [
       2,
@@ -16,6 +17,41 @@
         "allowTemplateLiterals": true
       }
     ],
-    "no-multiple-empty-lines": ["error",{ "max": 0, "maxEOF": 1 }]
-  }
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 1
+      }
+    ],
+    "padding-line-between-statements": [
+      "error",
+      {"blankLine": "always", "prev": "import", "next": "*"},
+      {"blankLine": "any", "prev": "import", "next": "import"}
+    ],
+    "prefer-arrow-callback": [
+      "error",
+      {
+        "allowUnboundThis": false
+      }
+    ],
+    "prefer-arrow/prefer-arrow-functions": [
+      "warn",
+      {
+        "disallowPrototype": true,
+        "singleReturnOnly": true,
+        "classPropertiesAllowed": false
+      }
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all"
+      }
+    ],
+    "curly": ["error", "all"]
+  },
+  "plugins": [
+    "prefer-arrow"
+  ]
 }
