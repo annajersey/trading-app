@@ -1,7 +1,7 @@
-import {clearPrices, savePrices} from "./DBClient";
-import dotenv from 'dotenv';
+import {clearPrices, savePrices} from "./DBClient/updatePrices";
+import dotenv from "dotenv";
 dotenv.config();
-const axios = require('axios');
+const axios = require("axios");
 const express = require("express");
 const routes = require("./routes.js");
 const app = express();
@@ -11,17 +11,16 @@ app.use(function(req, res, next) {
 });
 routes(app);
 const socketIo = require("socket.io");
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 const server = app.listen(5001, function () {
     console.log("Trading App running on port.", server.address().port);
 });
-
 const io = socketIo(server);
 io.on("connection", socket => {
-    let symbols = socket.handshake.query.symbols.split(',').map(item => item.toLowerCase() + '@ticker').join('/');
-    let url = 'wss://stream.binance.com:9443/ws/' + symbols;
+    let symbols = socket.handshake.query.symbols.split(",").map(item => item.toLowerCase() + "@ticker").join("/");
+    let url = "wss://stream.binance.com:9443/ws/" + symbols;
     const ws = new WebSocket(url);
-    ws.on('message', function (data) {
+    ws.on("message", function (data) {
         let result = tickerTransform(JSON.parse(data));
         socket.emit("TradesAPI", JSON.stringify(result));
     });
@@ -51,11 +50,9 @@ io.on("connection", socket => {
         totalTrades: m.n,
     });
 });
-
 clearPrices(); //clean data older than a 24h
 setInterval(()=>
     axios.get(`https://api.binance.com/api/v1/ticker/24hr`).then(response => {
         savePrices(response.data);
     }).catch(error => {console.log(error);}), 1000*60*process.env.ADD_TO_DB_INTERVAL); //add new info every 5min
-
 setInterval(()=>clearPrices(), 1000*60*process.env.CLEAN_DB_INTERVAL);//clean data ones a day
