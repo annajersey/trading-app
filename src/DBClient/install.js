@@ -5,7 +5,7 @@ exports.installDB = async (symbols) => {
     try {
         await client.query("BEGIN");
         console.log("creating symbols table");
-        let querySymbols = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
+        const querySymbols = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS symbols (
         symbol character varying,
         baseAsset character varying,
@@ -31,7 +31,7 @@ exports.installDB = async (symbols) => {
                 }
             });
         });
-        let queryPrices = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
+        const queryPrices = `CREATE SEQUENCE IF NOT EXISTS prices_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS prices (
         symbol character(80),
         priceChange numeric,

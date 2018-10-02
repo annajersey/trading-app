@@ -16,7 +16,7 @@ exports.savePrices = async (result) => {
             + item.closeTime + "', current_timestamp),");
     insetQuery = insetQuery.slice(0, -1);
     try {
-        let query = "INSERT INTO prices (symbol,priceChange,priceChangePercent," +
+        const query = "INSERT INTO prices (symbol,priceChange,priceChangePercent," +
             "closePrice,openPrice,highPrice,lowPrice,volume,closeTime,datetime) " +
             "VALUES " + insetQuery;
         client.query(query, (error) => {

@@ -2,7 +2,7 @@ import {getSymbols} from "./DBClient/data";
 import log from "./logger";
 
 const axios = require("axios");
-let appRouter = (app) => {
+const appRouter = (app) => {
     app.get("/", (req, res) => {
         res.status(200).send("Welcome to our API");
     });
@@ -21,10 +21,10 @@ let appRouter = (app) => {
             });
     });
     app.get("/hourly/:symbol", (req, res) => {
-        let url = `https://api.binance.com/api/v1/klines?symbol=${req.params.symbol}&interval=1m&limit=61`;
+        const url = `https://api.binance.com/api/v1/klines?symbol=${req.params.symbol}&interval=1m&limit=61`;
         axios.get(url)
             .then(response => {
-                let result = response.data.map(item => klinesTransform(item));
+                const result = response.data.map(item => klinesTransform(item));
                 res.status(200).send(JSON.stringify(result));
             })
             .catch(error => {
