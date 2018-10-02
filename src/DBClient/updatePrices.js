@@ -1,5 +1,5 @@
 import pool from "./config";
-import log from "../logger";
+import logToFile from "../logger";
 
 exports.savePrices = async (result) => {
     const client = await pool.connect();
@@ -20,20 +20,24 @@ exports.savePrices = async (result) => {
             "closePrice,openPrice,highPrice,lowPrice,volume,closeTime,datetime) " +
             "VALUES " + insetQuery;
         client.query(query, (error) => {
-            if (error) {log.info(error);}
+            if (error) {
+                logToFile(error);
+            }
         });
     } catch (e) {
         throw e;
     } finally {
-        log.info("prices saved");
+        logToFile("prices saved");
         client.release();
     }
 };
 exports.clearPrices = async () => {
     const client = await pool.connect();
     client.query("DELETE from prices WHERE datetime < (now() - '" + process.env.CLEAN_DB_INTERVAL + " minutes'::interval)", (error) => {
-        if (error) {log.info(error);}
+        if (error) {
+            logToFile(error);
+        }
         client.release();
     }); //delete all records older than a day
-    log.info("clear old prices data");
+    logToFile("clear old prices data");
 };

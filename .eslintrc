@@ -51,7 +51,8 @@
     ],
     "curly": ["error", "all"],
     "no-var": ["error"],
-    "prefer-const": ["error"]
+    "prefer-const": ["error"],
+    "keyword-spacing": ["error"]
   },
   "plugins": [
     "prefer-arrow"

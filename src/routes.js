@@ -1,7 +1,7 @@
 import {getSymbols} from "./DBClient/data";
-import log from "./logger";
+import logToFile from "./logger";
+import axios from "axios";
 
-const axios = require("axios");
 const appRouter = (app) => {
     app.get("/", (req, res) => {
         res.status(200).send("Welcome to our API");
@@ -17,7 +17,7 @@ const appRouter = (app) => {
                 res.status(200).send(response.data);
             })
             .catch(error => {
-                log.info(error);
+                logToFile(error);
             });
     });
     app.get("/hourly/:symbol", (req, res) => {
@@ -28,7 +28,7 @@ const appRouter = (app) => {
                 res.status(200).send(JSON.stringify(result));
             })
             .catch(error => {
-                log.info(error);
+                logToFile(error);
             });
         const klinesTransform = m => ({
             OpenTime: m[0],

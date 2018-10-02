@@ -4,8 +4,8 @@ exports.installDB = async (symbols) => {
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
-        console.log("creating symbols table");
-        const querySymbols = ` CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
+        console.log("Creating symbols table");
+        const querySymbols = `CREATE SEQUENCE IF NOT EXISTS symbols_id_seq start 1 increment 1;
         CREATE TABLE IF NOT EXISTS symbols (
         symbol character varying,
         baseAsset character varying,
