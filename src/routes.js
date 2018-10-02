@@ -25,7 +25,6 @@ let appRouter = (app) => {
         axios.get(url)
             .then(response => {
                 let result = response.data.map(item => klinesTransform(item));
-                //console.log(result);
                 res.status(200).send(JSON.stringify(result));
             })
             .catch(error => {
